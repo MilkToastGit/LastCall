@@ -14,36 +14,47 @@ public class CustomerController : MonoBehaviour
 
     private Camera cam;
     private Rigidbody rb;
+    private CustomerState state = CustomerState.Approaching;
+    Vector3 moveDirection => (state == CustomerState.Leaving ? -1 : 1) * new Vector3 
+        (cam.transform.position.x - transform.position.x, 0, cam.transform.position.z - transform.position.z).normalized;
+    
     private int requestedDrink;
-    private bool leaving = false;
-    Vector3 moveDirection;
+    private float patience = 5;
 
     private void Start ()
     {
         cam = Camera.main;
         rb = GetComponent<Rigidbody> ();
-        moveDirection = cam.transform.position - transform.position;
-        moveDirection.y = 0;
-        moveDirection.Normalize ();
         transform.forward = moveDirection;
         text.text = RandomDrinksRequestGenerator ();
     }
 
     private void Update ()
     {
+        if (state == CustomerState.Waiting)
+        {
+            patience = Mathf.Max (patience - Time.deltaTime, 0);
+            return;
+        }
+
         rb.velocity = moveDirection * (playerIsLooking ? moveSpeed : moveSpeedSlow);
-        //transform.position += moveDirection * (playerIsLooking ? moveSpeed : moveSpeedSlow) * Time.deltaTime;
+        transform.forward = moveDirection;
+    }
+
+    private void OnCollisionEnter (Collision collision)
+    {
+        if (collision.collider.CompareTag ("Bar") && state == CustomerState.Approaching)
+            state = CustomerState.Waiting;
     }
 
     public void ReceiveDrink (int drinkType)
     {
-        if (leaving) return;
+        if (state == CustomerState.Leaving) return;
+
         if (drinkType == requestedDrink)
         {
-            moveDirection *= -1;
-            transform.forward = moveDirection;
             text.text = "";
-            leaving = true;
+            state = CustomerState.Leaving;
             Destroy (gameObject, 20);
         }
     }
@@ -107,4 +118,11 @@ public class CustomerController : MonoBehaviour
         " and buy yourself something nice",
         " keep the change"
     };
+}
+
+public enum CustomerState
+{
+    Approaching,
+    Waiting,
+    Leaving
 }
