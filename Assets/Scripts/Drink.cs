@@ -12,6 +12,8 @@ public class Drink : MonoBehaviour
     private Vector3 origin;
     private Quaternion originRot;
 
+    private bool returnedToPosition;
+
     private void Awake ()
     {
         rb = GetComponent<Rigidbody> ();
@@ -53,4 +55,14 @@ public class Drink : MonoBehaviour
         "Pilsner",
     };
     public static int RandomDrink => Random.Range (0, DrinkTypes.Length);
+
+    public IEnumerator ReturnToPosition()
+    {
+        yield return new WaitForSeconds(3f);
+        if (!returnedToPosition)
+        {
+            transform.position = origin;
+            transform.rotation = originRot;
+        }
+    }
 }

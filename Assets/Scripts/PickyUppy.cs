@@ -35,6 +35,7 @@ public class PickyUppy : MonoBehaviour
             grabbedObject.isKinematic = false;
             grabbedObject.useGravity = true;
             grabbedObject.AddForce (transform.forward * throwForce, ForceMode.Impulse);
+            StartCoroutine(grabbedObject.GetComponent<Drink>().ReturnToPosition());
             grabbedObject = null;
         }
 
