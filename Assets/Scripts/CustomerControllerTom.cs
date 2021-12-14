@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class CustomerController : MonoBehaviour
+public class CustomerControllerTom : MonoBehaviour
 {
     public int DrinkType => requestedDrink;
 
@@ -11,10 +11,6 @@ public class CustomerController : MonoBehaviour
     [SerializeField] TextMeshPro text;
 
     private bool playerIsLooking => Vector3.Angle (cam.transform.forward, transform.position - cam.transform.position) < 60;
-
-    //toms tomfoolery
-    public Animator anim;
-
 
     private Camera cam;
     private Rigidbody rb;
@@ -31,7 +27,6 @@ public class CustomerController : MonoBehaviour
         rb = GetComponent<Rigidbody> ();
         transform.forward = moveDirection;
         text.text = RandomDrinksRequestGenerator ();
-        anim = GetComponent<Animator>();
     }
 
     private void Update ()
@@ -44,15 +39,12 @@ public class CustomerController : MonoBehaviour
 
         rb.velocity = moveDirection * (playerIsLooking ? moveSpeed : moveSpeedSlow);
         transform.forward = moveDirection;
-        anim.SetFloat("Speed", moveSpeed);
-        anim.Play("DrunkForwards");
     }
 
     private void OnCollisionEnter (Collision collision)
     {
         if (collision.collider.CompareTag ("Bar") && state == CustomerState.Approaching)
             state = CustomerState.Waiting;
-            anim.Play("DrunkIdle");
     }
 
     public void ReceiveDrink (int drinkType)
@@ -63,7 +55,6 @@ public class CustomerController : MonoBehaviour
         {
             text.text = "";
             state = CustomerState.Leaving;
-            anim.Play("DrunkBackwards");
             Destroy (gameObject, 20);
         }
     }
@@ -78,7 +69,7 @@ public class CustomerController : MonoBehaviour
     }
 
     private string[] phraseStarts = new string[]
-     {
+    {
         "Can I get a ",
         "Gimme a ",
         "I needs me a ",
@@ -100,7 +91,7 @@ public class CustomerController : MonoBehaviour
         "I gotta hankerin for a ",
         "Got milk? ",
         "I'm feelin a "
-     };
+    };
     private string[] phraseEnds = new string[]
     {
         " please",
@@ -129,9 +120,9 @@ public class CustomerController : MonoBehaviour
     };
 }
 
-public enum CustomerState
-{
-    Approaching,
-    Waiting,
-    Leaving
-}
+//public enum CustomerState
+//{
+//    Approaching,
+//    Waiting,
+//    Leaving
+//}
