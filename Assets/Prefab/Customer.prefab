@@ -214,6 +214,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 1
   moveSpeedSlow: 0.5
+  startPatience: 7
   text: {fileID: 5245897278770235752}
 --- !u!1 &5245897278721615853
 GameObject:

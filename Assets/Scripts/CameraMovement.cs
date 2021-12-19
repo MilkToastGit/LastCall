@@ -12,6 +12,7 @@ public class CameraMovement : MonoBehaviour
     private void Awake ()
     {
         Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     private void Update ()

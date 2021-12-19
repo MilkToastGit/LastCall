@@ -7,24 +7,27 @@ public class CustomerController : MonoBehaviour
 {
     public int DrinkType => requestedDrink;
 
-    [SerializeField] private float moveSpeed, moveSpeedSlow;
+    [SerializeField] private float moveSpeed, moveSpeedSlow, startPatience;
     [SerializeField] TextMeshPro text;
 
     private bool playerIsLooking => Vector3.Angle (cam.transform.forward, transform.position - cam.transform.position) < 60;
 
     private Camera cam;
     private Rigidbody rb;
+    private Renderer render;
     private CustomerState state = CustomerState.Approaching;
     Vector3 moveDirection => (state == CustomerState.Leaving ? -1 : 1) * new Vector3 
         (cam.transform.position.x - transform.position.x, 0, cam.transform.position.z - transform.position.z).normalized;
     
     private int requestedDrink;
-    private float patience = 5;
+    private float patience;
 
     private void Start ()
     {
         cam = Camera.main;
         rb = GetComponent<Rigidbody> ();
+        render = GetComponent<Renderer> ();
+        patience = startPatience;
         transform.forward = moveDirection;
         text.text = RandomDrinksRequestGenerator ();
     }
@@ -34,6 +37,8 @@ public class CustomerController : MonoBehaviour
         if (state == CustomerState.Waiting)
         {
             patience = Mathf.Max (patience - Time.deltaTime, 0);
+            render.material.color = new Color (1, patience / startPatience, patience / startPatience);
+            AnxietyMeter.I.Increase ((1 - patience / startPatience) * Time.deltaTime);
             return;
         }
 
@@ -44,7 +49,6 @@ public class CustomerController : MonoBehaviour
     private void OnCollisionEnter (Collision collision)
     {
         if (collision.collider.CompareTag ("Bar") && state == CustomerState.Approaching)
-        {
             state = CustomerState.Waiting;
     }
 
@@ -58,6 +62,7 @@ public class CustomerController : MonoBehaviour
             state = CustomerState.Leaving;
             Destroy (gameObject, 20);
         }
+        else patience = Mathf.Max (patience - startPatience / 5, 0);
     }
 
     private string RandomDrinksRequestGenerator ()
