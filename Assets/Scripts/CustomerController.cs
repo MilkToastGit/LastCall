@@ -44,6 +44,7 @@ public class CustomerController : MonoBehaviour
     private void OnCollisionEnter (Collision collision)
     {
         if (collision.collider.CompareTag ("Bar") && state == CustomerState.Approaching)
+        {
             state = CustomerState.Waiting;
     }
 
